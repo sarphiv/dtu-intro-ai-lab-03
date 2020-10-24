@@ -110,12 +110,17 @@ def centers_as_data_points(assignments, centers):
 #Load image
 image_raw = imread('images/soccerball.jpg')
 
+#---Random note: would it make sense to not scale the image if we trie to compare a compressed with a non compressed?
+
 #Scale image
 image_max_length = 166
 image = rescale_image(image_raw, image_max_length)
 
 #Convert to format K-means works on
 data_points = image_to_data_point(image)
+
+#--Note: Would it be possible to add a method that makes the num-clusters assignment more dynamic?
+#-- somehow make the amount of clusters used based on the amount of contrasting or very diffrent colours
 
 #Run K-means
 num_clusters = 3
