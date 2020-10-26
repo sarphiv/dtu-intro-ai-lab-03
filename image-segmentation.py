@@ -8,7 +8,8 @@ from skimage.transform import rescale
 from skimage.color import rgb2lab, lab2rgb
 from sklearn.metrics.pairwise import euclidean_distances
 import matplotlib.pyplot as plt
-
+from os import listdir
+from os.path import isfile, join, getsize
 
 
 max_image_side_length = -1         #Use the value -1, for no resizing
@@ -200,26 +201,28 @@ def calculate_loss(image_reference, image_compressed):
 
 
 
-#Load image
-#NOTE: Scaling for faster testing purposes. Disable for experiment
-image = load_image("images/gates.jpg", max_image_side_length)
+#Image (file_name, file_size, loss)
+results = []
 
-#Compress image to file
-compress_image(image, "image.npz")
+image_dir = "images"
+images_file_names = [join(image_dir, f) for f in listdir(image_dir) if isfile(join(image_dir, f))]
 
-#Load and uncompress image from file
-compressed_image = uncompress_image("image.npz")
+for image_file_name in images_file_names:
+    #Load image
+    #NOTE: Scaling for faster testing purposes. Disable for experiment
+    image = load_image(image_file_name, max_image_side_length)
 
-#Calculate and print loss
-loss = calculate_loss(image, compressed_image)
-print(f"Loss:\n{loss}")
+    #Compress image to file
+    compress_image(image, "image.npz")
 
+    #Get file size
+    file_size = getsize(image_file_name)
 
-#Display image
-plt.figure(0)
-plt.imshow(compressed_image)
-plt.axis('off')
-plt.figure(1)
-plt.imshow(image)
-plt.axis('off')
-plt.show()
+    #Calculate loss
+    compressed_image = uncompress_image("image.npz")
+    loss = calculate_loss(image, compressed_image)
+    
+
+    results.append((image_file_name, file_size, loss))
+
+    print(results)
