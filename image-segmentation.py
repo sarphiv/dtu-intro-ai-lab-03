@@ -107,7 +107,7 @@ def calculate_clusters(data_points, num_clusters: int):
         #If next progress bar should be printed, print it
         bar_progress = math.floor(i / max_k_means_iterations * progress_bars)
         if  bar_progress > current_progress:
-            print('-', end='')
+            print('-', end='', flush=True)
             current_progress = bar_progress
 
         #If converged, break out of loop
@@ -201,28 +201,32 @@ def calculate_loss(image_reference, image_compressed):
 
 
 
-#Image (file_name, file_size, loss)
-results = []
+#Image (file_name, loss)
+results = {}
 
 image_dir = "images"
 images_file_names = [join(image_dir, f) for f in listdir(image_dir) if isfile(join(image_dir, f))]
 
-for image_file_name in images_file_names:
-    #Load image
-    #NOTE: Scaling for faster testing purposes. Disable for experiment
-    image = load_image(image_file_name, max_image_side_length)
+for image_file_name in images_file_names[0:20]:
+    for _ in range(20):
+        #Load image
+        #NOTE: Scaling for faster testing purposes. Disable for experiment
+        image = load_image(image_file_name, max_image_side_length)
 
-    #Compress image to file
-    compress_image(image, "image.npz")
+        #Compress image to file
+        compress_image(image, "image.npz")
 
-    #Get file size
-    file_size = getsize(image_file_name)
+        #Get file size
+        file_size = getsize(image_file_name)
 
-    #Calculate loss
-    compressed_image = uncompress_image("image.npz")
-    loss = calculate_loss(image, compressed_image)
-    
+        #Calculate loss
+        compressed_image = uncompress_image("image.npz")
+        loss = calculate_loss(image, compressed_image)
 
-    results.append((image_file_name, file_size, loss))
 
-    print(results)
+        if image_file_name in results:
+            results[image_file_name].append(loss)
+        else:
+            results[image_file_name] = [loss]
+
+        print(results, flush=True)
