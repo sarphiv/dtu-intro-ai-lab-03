@@ -225,4 +225,4 @@ for image_file_name in images_file_names:
 
     results.append((image_file_name, file_size, loss))
 
-    print(results)
+    print(results, flush=True )
