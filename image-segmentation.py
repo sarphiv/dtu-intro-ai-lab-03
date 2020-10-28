@@ -204,7 +204,7 @@ def calculate_loss(image_reference, image_compressed):
 #Image (file_name, loss)
 results = {}
 
-image_dir = "images"
+image_dir = "images/jpeg"
 images_file_names = [join(image_dir, f) for f in listdir(image_dir) if isfile(join(image_dir, f))]
 
 for image_file_name in images_file_names[0:20]:
@@ -217,16 +217,12 @@ for image_file_name in images_file_names[0:20]:
         compress_image(image, "image.npz")
 
         #Get file size
-        file_size = getsize(image_file_name)
-
-        #Calculate loss
-        compressed_image = uncompress_image("image.npz")
-        loss = calculate_loss(image, compressed_image)
+        file_size = getsize("image.npz")
 
 
         if image_file_name in results:
-            results[image_file_name].append(loss)
+            results[image_file_name].append(file_size)
         else:
-            results[image_file_name] = [loss]
+            results[image_file_name] = [file_size]
 
         print(results, flush=True)
